@@ -1,0 +1,54 @@
+Comp : Concat, Tokenize, Min, Max, Sum, Limit
+Store
+Distinct
+Faltten
+IsEmpty
+-------------------------------------------------------------------------------------------------------------
+
+stud = load '/home/acadgild/PigNotes/Student_PigEx.txt' using PigStorage('/') as (roll:int,fname:chararray,lname:chararray,age:int,m1:int,m2:int);
+--------------------------------------------------------------------------------------------------------------
+SUM
+GroupStudent = Group stud All;
+sumEx = FOREACH GroupStudent GENERATE stud.fname,SUM(stud.m1);
+--------------------------------------------------------------------------------------------------------------
+Count
+
+countEx = FOREACH GroupStudent GENERATE COUNT(stud.m1);
+
+Count With Null values
+
+countEx = FOREACH GroupStudent GENERATE COUNT(stud.m2);
+
+--------------------------------------------------------------------------------------------------------------
+Max
+
+MaxEx = FOREACH GroupStudent GENERATE MAX(stud.m2);
+
+--------------------------------------------------------------------------------------------------------------
+Min
+
+MinEx = FOREACH GroupStudent GENERATE MIN(stud.m2);
+--------------------------------------------------------------------------------------------------------------
+CONCAT
+
+ConCatEx = FOREACH stud  GENERATE roll, CONCAT(fname,lname);
+--------------------------------------------------------------------------------------------------------------
+TokenEx = FOREACH ConCatEx GENERATE TOKENIZE(name);
+---------------------------------------------------------------------------------------------------------------
+sampLimit = LIMIT stud 2;
+--------------------------------------------------------------------------------------------------------------
+SStore = STORE sampLimit into 'PigNotes/Assignment8_output';
+-------------------------------------------------------------------------------------------------------------
+distinctex = DISTINCT stud;
+--------------------------------------------------------------------------------------------------------------
+sf = group stud by age;
+X = FOREACH sf GENERATE group, FLATTEN(stud);
+-------------------------------------------------------------------------------------------------------------
+stud = load '/home/acadgild/PigNotes/Student_PigEx.txt' using PigStorage('/') as (roll:int,fname:chararray,lname:chararray,age:int,m1:int,m2:int);
+
+stud_marks = load '/home/acadgild/PigNotes/Student_PigEx.txt' using PigStorage('/') as (roll:int,fname:chararray,lname:chararray,age:int,m1:int,m2:int);
+
+X = cogroup stud by m2 inner, stud_marks by m2
+
+Y = filter X by IsEmpty(stud_marks);
+
